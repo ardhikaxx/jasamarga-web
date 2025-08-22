@@ -51,10 +51,13 @@
             </li>
             
             <li class="nav-item mt-3">
-                <a class="nav-link d-flex align-items-center text-danger" href="#">
+                <a class="nav-link d-flex align-items-center text-danger" href="#" onclick="confirmLogout(event)">
                     <i class="bi bi-box-arrow-left me-3"></i>
-                    <span>Quit</span>
+                    <span>Logout</span>
                 </a>
+                <form id="sidebar-logout-form" method="POST" action="{{ route('logout') }}" style="display: none;">
+                    @csrf
+                </form>
             </li>
         </ul>
     </div>

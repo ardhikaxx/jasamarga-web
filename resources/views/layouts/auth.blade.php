@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         :root {
             --primary-blue: #00a4f4;
@@ -68,13 +69,18 @@
             background-color: var(--dark-blue);
             border-color: var(--dark-blue);
         }
+
+        .swal2-popup {
+            border-radius: 15px !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
     </style>
 </head>
 
 <body>
     <div class="container mb-0">
         <div class="d-flex align-items-center justify-content-between pt-3">
-            <a href="#">
+            <a href="{{ route('home') }}">
                 <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo" style="width: 223px;">
             </a>
             @if(Request::is('login'))
@@ -88,8 +94,40 @@
         @yield('content')
     </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2500,
+                background: '#DEF1FF',
+                color: '#0069ab',
+                iconColor: '#0095de',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            });
+        @endif
+        
+        @if(session('login_success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Berhasil!',
+                text: 'Selamat datang di sistem Jasamarga',
+                showConfirmButton: false,
+                timer: 2500,
+                background: '#DEF1FF',
+                color: '#0069ab',
+                iconColor: '#0095de',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            });
+        @endif
+    </script>
 </body>
 
 </html>

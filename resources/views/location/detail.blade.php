@@ -13,7 +13,7 @@
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <a href="" class="btn btn-primary px-4">
+                <a href="{{ route('check-location') }}" class="btn btn-primary px-4">
                     Kembali <i class="bi bi-check-circle-fill fs-5 ms-2"></i>
                 </a>
             </div>

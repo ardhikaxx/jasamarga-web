@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         :root {
             --primary-blue: #00a4f4;
@@ -174,6 +175,11 @@
             color: var(--text-dark);
         }
 
+        .swal2-popup {
+            border-radius: 15px !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+
         /* Mobile Styles */
         @media (max-width: 992px) {
             .sidebar {
@@ -217,6 +223,68 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2500,
+                background: '#DEF1FF',
+                color: '#0069ab',
+                iconColor: '#0095de',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            });
+        @endif
+        
+        @if(session('login_success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Berhasil!',
+                text: 'Selamat datang di sistem Jasamarga',
+                showConfirmButton: false,
+                timer: 2500,
+                background: '#DEF1FF',
+                color: '#0069ab',
+                iconColor: '#0095de',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            });
+        @endif
+        
+        // Fungsi untuk konfirmasi logout
+        function confirmLogout(event) {
+            event.preventDefault();
+            
+            Swal.fire({
+                title: 'Konfirmasi Logout',
+                text: 'Apakah Anda yakin ingin keluar dari sistem?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Logout',
+                cancelButtonText: 'Batal',
+                background: '#FFF0F0',
+                color: '#a30000',
+                iconColor: '#d33',
+                customClass: {
+                    popup: 'swal2-popup',
+                    confirmButton: 'btn-logout-confirm',
+                    cancelButton: 'btn-logout-cancel'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form logout
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.querySelector('.sidebar-toggle');
