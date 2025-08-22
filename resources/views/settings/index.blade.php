@@ -60,9 +60,9 @@
                     </div>
 
                     <div class="mb-4">
-                        <h5 class="fw-bold">Change Password</h5>
+                        <h5 class="fw-bold text-start mb-3">Change Password</h5>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-2 mb-md-0">
                                 <label class="form-label">New Password</label>
                                 <input type="password" name="password" class="form-control" placeholder="Enter new password">
                             </div>

@@ -1,7 +1,7 @@
 <nav class="navbar-top navbar navbar-light bg-white sticky-top">
     <div class="container-fluid px-3">
         <button class="btn sidebar-toggle d-block d-md-none">
-            <i class="bi bi-list"></i>
+            <i class="bi bi-list fs-1"></i>
         </button>
         
         <div class="d-flex align-items-center ms-auto">

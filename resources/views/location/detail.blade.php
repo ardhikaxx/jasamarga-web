@@ -9,7 +9,9 @@
             <h3 class="mb-4 text-center text-primary fw-bold">CHECK LOCATION SFO</h3>
 
             <div class="d-flex justify-content-center align-items-center mb-5">
-                <canvas id="sfoCanvas" width="900" height="400"></canvas>
+                <div class="canvas-wrapper">
+                    <canvas id="sfoCanvas" width="900" height="400"></canvas>
+                </div>
             </div>
 
             <div class="d-flex justify-content-end mt-4">
@@ -32,6 +34,25 @@
     .btn-primary:hover {
         background-color: #008fd8;
         border-color: #008fd8;
+    }
+    
+    .canvas-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    @media (min-width: 992px) {
+        .canvas-wrapper {
+            max-width: 900px;
+            overflow-x: hidden;
+        }
+    }
+    
+    @media (max-width: 991px) and (min-width: 768px) {
+        .canvas-wrapper {
+            max-width: 700px;
+        }
     }
 </style>
 

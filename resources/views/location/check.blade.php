@@ -5,11 +5,11 @@
 @section('content')
     <div class="container-fluid">
         <div class="card">
-            <div class="card-body p-4">
-                <h3 class="mb-4 text-center text-primary fw-bold">CHECK LOCATION SFO</h3>
+            <div class="card-body p-3 p-md-4">
+                <h3 class="mb-3 mb-md-4 text-center text-primary fw-bold">CHECK LOCATION SFO</h3>
                 <form>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-6 mb-1 mb-md-0">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
@@ -19,7 +19,7 @@
                                 <input type="text" class="form-control" id="kmAwal" placeholder="Masukan KM Awal">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
@@ -32,8 +32,8 @@
                         </div>
                     </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6">
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-6 mb-1 mb-md-0">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/314_740.svg') }}" alt="" class="form-icon">
                                 <label for="lajur" class="form-label text-primary h5">Lajur</label>
@@ -45,7 +45,7 @@
                                 <option value="3">Lajur 3</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex justify-content-end mt-3 mt-md-0">
                         {{-- <button type="submit" class="btn btn-primary px-4">Cek Lokasi<i class="bi bi-check-circle-fill fs-5 ms-2"></i></button> --}}
                         <a href="{{ route('location-sfo') }}" class="btn btn-primary px-4">Cek Lokasi<i
                                 class="bi bi-check-circle-fill fs-5 ms-2"></i></a>
@@ -134,6 +134,29 @@
             background-color: #f8f9fa;
             color: #6d6d6d;
             border: 1px solid #e7e7e7;
+        }
+
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 20px 15px;
+            }
+            
+            .form-group-header {
+                margin-top: 15px;
+            }
+            
+            .input-group, .form-select {
+                margin-bottom: 10px;
+            }
+            
+            .btn-primary {
+                width: 100%;
+                margin-top: 15px;
+            }
+            
+            .d-flex.justify-content-end {
+                justify-content: center !important;
+            }
         }
     </style>
 @endsection

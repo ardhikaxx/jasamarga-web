@@ -12,7 +12,7 @@
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <label for="lokasi_awal" class="form-label text-secondary h5">Lokasi SFO</label>
-                            <div class="d-flex justify-content-center align-items-center gap-2">
+                            <div class="d-flex justify-content-center align-items-center gap-4 flex-md-row flex-column">
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="lokasi_awal" name="lokasi_awal"
                                         placeholder="Masukan Lokasi Awal">
@@ -28,7 +28,7 @@
                     <div class="row mb-3">
                         <div class="col-md-12">
                             <label for="posisi_jalur_awal" class="form-label text-secondary h5">Posisi SFO</label>
-                            <div class="d-flex justify-content-center align-items-center gap-2">
+                            <div class="d-flex justify-content-center align-items-center gap-4 flex-md-row flex-column">
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="posisi_jalur_awal"
                                         name="posisi_jalur_awal" placeholder="Masukan Posisi Jalur Awal">
@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3 mb-md-0">
                             <label for="panjang" class="form-label text-secondary h5">Panjang SFO</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="panjang" name="panjang"
@@ -59,7 +59,7 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3 mb-md-0">
                             <label for="tebal" class="form-label text-secondary h5">Tebal SFO</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="tebal" name="tebal"

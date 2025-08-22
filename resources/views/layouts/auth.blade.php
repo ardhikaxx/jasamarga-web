@@ -28,6 +28,9 @@
             background-color: var(--white);
             color: var(--text-dark);
             overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .btn-login {
@@ -38,13 +41,13 @@
             border-radius: 10px;
             background: linear-gradient(142deg, #a7e2ff 0%, #0095de 136.03%);
             color: var(--white);
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             border: none;
-            padding: 16px 24px;
-            height: 46px;
+            padding: 10px 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .btn-login:hover {
@@ -74,6 +77,128 @@
             border-radius: 15px !important;
             font-family: 'Poppins', sans-serif !important;
         }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 20px;
+            border: none;
+            background-color: #DEF1FF;
+            box-shadow: 0 10px 30px rgba(0, 149, 222, 0.15);
+        }
+
+        .auth-logo {
+            max-width: 280px;
+            width: 100%;
+            height: auto;
+        }
+
+        .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 15px;
+            height: 46px;
+            font-size: 15px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.25rem rgba(0, 164, 244, 0.25);
+        }
+
+        textarea.form-control {
+            height: 100px;
+            resize: none;
+        }
+
+        .form-label {
+            color: var(--dark-blue);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .auth-btn {
+            background: linear-gradient(142deg, #a7e2ff 0%, #0095de 136.03%);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            height: 46px;
+            font-size: 16px;
+        }
+
+        .auth-link {
+            color: var(--dark-blue);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .auth-link:hover {
+            text-decoration: underline;
+        }
+
+        .header-logo {
+            max-width: 223px;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .auth-card {
+                border-radius: 15px;
+            }
+            
+            .card-body {
+                padding: 25px !important;
+            }
+            
+            .header-logo {
+                max-width: 180px;
+            }
+            
+            .btn-login {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            
+            .card-body {
+                padding: 20px 15px !important;
+            }
+            
+            .header-logo {
+                max-width: 150px;
+            }
+            
+            .form-label {
+                font-size: 15px;
+            }
+            
+            .form-control {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            
+            .auth-btn {
+                height: 44px;
+                font-size: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -81,7 +206,7 @@
     <div class="container mb-0">
         <div class="d-flex align-items-center justify-content-between pt-3">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo" style="width: 223px;">
+                <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo" class="header-logo">
             </a>
             @if(Request::is('login'))
                 <a href="{{ url('/register') }}" class="btn btn-login">Register</a>
