@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasamarga - @yield('title', 'Login')</title>
+    <link rel="shortcut icon" href="{{ asset('images/icon.png') }}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00a4f4;
+            --dark-blue: #0069ab;
+            --text-dark: #3d3d3d;
+            --text-light: #6d6d6d;
+            --text-gray: #888888;
+            --bg-light-blue: #f2faff;
+            --white: #ffffff;
+            --border-color: #e7e7e7;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .btn-login {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 10px;
+            background: linear-gradient(142deg, #a7e2ff 0%, #0095de 136.03%);
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 700;
+            border: none;
+            padding: 16px 24px;
+            height: 46px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(142deg, #8fd8ff 0%, #007cb7 136.03%);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: var(--white)
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mb-0">
+        <div class="d-flex align-items-center justify-content-between pt-3">
+            <a href="#">
+                <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo" style="width: 223px;">
+            </a>
+            @if(Request::is('login'))
+                <a href="{{ url('/register') }}" class="btn btn-login">Register</a>
+            @elseif(Request::is('register'))
+                <a href="{{ url('/login') }}" class="btn btn-login">Login</a>
+            @else
+                <a href="{{ url('/login') }}" class="btn btn-login">Login</a>
+            @endif
+        </div>
+        @yield('content')
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
