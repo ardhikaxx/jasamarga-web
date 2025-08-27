@@ -45,6 +45,30 @@
             box-shadow: -8px 8px 28px 0px rgba(0, 0, 0, 0.06);
         }
 
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 10px;
+            background: linear-gradient(142deg, #a7e2ff 0%, #0095de 136.03%);
+            color: var(--white);
+            font-size: 20px;
+            font-weight: 800;
+            border: none;
+            padding: 16px 24px;
+            height: 46px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(142deg, #8fd8ff 0%, #007cb7 136.03%);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
         .btn-login {
             display: flex;
             align-items: center;
@@ -253,12 +277,11 @@
             font-size: 16px;
             font-weight: 600;
             font-family: 'Manrope', sans-serif;
-            color: var(--text-dark);
         }
 
         .input-wrapper input::placeholder,
         .input-wrapper select {
-            color: var(--border-color);
+            color: var(--text-dark);
         }
 
         .select-wrapper {
@@ -429,6 +452,32 @@
             font-weight: 600;
         }
 
+        /* Tambahan style untuk modal */
+        #locationModal .modal-dialog {
+            max-width: 60%;
+        }
+
+        #locationModal .canvas-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #locationModal .info-item {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background-color: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            #locationModal .modal-dialog {
+                max-width: 95%;
+                margin: 0.5rem auto;
+            }
+        }
+
         /* Responsive adjustments */
         @media (max-width: 992px) {
             .navbar-collapse {
@@ -570,8 +619,9 @@
                 <form class="location-form row g-3 d-flex justify-content-center">
                     <div class="form-group col-md-3">
                         <div class="form-group-header">
-                            <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt="" class="form-icon">
-                            <label>Lokasi Dari</label>
+                            <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
+                                class="form-icon">
+                            <label>Lokasi Awal</label>
                         </div>
                         <div class="input-wrapper">
                             <input type="text" placeholder="Masukan Lokasi Awal">
@@ -587,7 +637,21 @@
                             <input type="text" placeholder="Masukan Lokasi Akhir">
                         </div>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-2">
+                        <div class="form-group-header">
+                            <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}"
+                                alt="" class="form-icon">
+                            <label>Pilih Tahun</label>
+                        </div>
+                        <div class="input-wrapper select-wrapper">
+                            <select id="tahun" name="tahun">
+                                @for ($i = date('Y'); $i >= 2000; $i--)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
                         <div class="form-group-header">
                             <img src="{{ asset('images/314_740.svg') }}" alt="" class="form-icon">
                             <label>Posisi</label>
@@ -610,6 +674,22 @@
             </div>
         </div>
     </section>
+
+    <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title fw-bold text-center" id="locationModalLabel">LOCATION SFO</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBodyContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <section id="map" class="map-section py-5">
         <div class="container">
@@ -714,23 +794,230 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tangani submit form
+            const locationForm = document.querySelector('.location-form');
+            locationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Tampilkan modal
+                const modal = new bootstrap.Modal(document.getElementById('locationModal'));
+                modal.show();
+
+                // Muat konten SFO ke dalam modal
+                loadSFOContent();
+            });
+
+            // Fungsi untuk memuat konten SFO
+            function loadSFOContent() {
+                const modalBody = document.getElementById('modalBodyContent');
+
+                // Tampilkan loading state
+                modalBody.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Memuat data SFO...</p>
+                </div>
+            `;
+
+                // Simulasi pengambilan data (dalam implementasi nyata, ini akan berupa AJAX request)
+                setTimeout(() => {
+                    // Konten dari detail.blade.php
+                    modalBody.innerHTML = `
+                    <div class="container-fluid">
+                        <div class="card border-0">
+                            <div class="card-body p-0">
+                                <div class="d-flex justify-content-center align-items-center mb-4">
+                                    <div class="canvas-wrapper" style="width: 100%; overflow-x: auto;">
+                                        <canvas id="sfoCanvas" width="900" height="400"></canvas>
+                                    </div>
+                                </div>
+
+                                <div class="keterangan-sfo w-100 bg-light p-3 rounded">
+                                    <h4 class="text-primary mb-3">Keterangan Data SFO</h4>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Lokasi SFO:</span>
+                                                <span id="lokasi-sfo">Jakarta - Surabaya</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Posisi Jalur:</span>
+                                                <span id="posisi-jalur">KM 25+200 - KM 25+800</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-3">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Panjang:</span>
+                                                <span id="panjang">600 m</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Lebar:</span>
+                                                <span id="lebar">8 m</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Tebal:</span>
+                                                <span id="tebal">25 cm</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Luas:</span>
+                                                <span id="luas">4800 m²</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Tanggal SFO:</span>
+                                                <span id="tanggal-sfo">15-08-2025</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="info-item bg-white p-2 rounded mb-2">
+                                                <span class="fw-bold text-secondary">Keterangan:</span>
+                                                <span id="keterangan">Perbaikan jalur arah timur, penggantian beton lama dengan rigid
+                                                    pavement.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                    // Inisialisasi canvas setelah konten dimuat
+                    initSfoCanvas();
+                }, 1000);
+            }
+
+            // Fungsi untuk menggambar canvas SFO
+            function initSfoCanvas() {
+                const canvas = document.getElementById("sfoCanvas");
+                if (!canvas) return;
+
+                const ctx = canvas.getContext("2d");
+                const selectedJalur = 1; // Default jalur
+
+                // Dummy data
+                const dataSFO = [{
+                        km_awal: 0,
+                        km_akhir: 1,
+                        warna: "blue",
+                        tahun: "2022"
+                    },
+                    {
+                        km_awal: 1,
+                        km_akhir: 2,
+                        warna: "green",
+                        tahun: "2023"
+                    },
+                    {
+                        km_awal: 2,
+                        km_akhir: 3,
+                        warna: "blue",
+                        tahun: "2024"
+                    },
+                    {
+                        km_awal: 3,
+                        km_akhir: 4,
+                        warna: "blue",
+                        tahun: "2025"
+                    },
+                ];
+
+                // Posisi Y untuk tiap jalur
+                const jalurY = {
+                    1: 100,
+                    2: 230,
+                    3: 360
+                };
+                const kmStep = 200; // Lebar per KM
+
+                function drawArrow(x, y) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x, y - 25);
+                    ctx.lineTo(x - 5, y - 20);
+                    ctx.moveTo(x, y - 25);
+                    ctx.lineTo(x + 5, y - 20);
+                    ctx.strokeStyle = "#000";
+                    ctx.stroke();
+                }
+
+                function drawTrack(jalur) {
+                    let y = jalurY[jalur];
+
+                    // Garis dasar jalur
+                    ctx.fillStyle = (jalur == selectedJalur) ? "#e0e0e0" : "#f5f5f5";
+                    ctx.fillRect(50, y, 800, 40);
+
+                    // Blok-blok data
+                    dataSFO.forEach(item => {
+                        let startX = 50 + item.km_awal * kmStep;
+                        let width = (item.km_akhir - item.km_awal) * kmStep;
+
+                        ctx.fillStyle = (jalur == selectedJalur) ? item.warna : "#cfcfcf";
+                        ctx.fillRect(startX, y, width, 40);
+
+                        // Tahun label
+                        ctx.fillStyle = "#000";
+                        ctx.font = "14px Arial";
+                        ctx.fillText(item.tahun, startX + width / 2 - 15, y + 65);
+
+                        // Panah
+                        drawArrow(startX + width / 2, y);
+                    });
+
+                    // KM label di atas jalur
+                    ctx.fillStyle = "#000";
+                    ctx.font = "14px Arial";
+                    for (let km = 0; km <= 4; km++) {
+                        ctx.fillText("KM " + km, 50 + km * kmStep, y - 15);
+                    }
+                }
+
+                // Gambar semua jalur
+                drawTrack(1);
+                drawTrack(2);
+                drawTrack(3);
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
+
                     const targetId = this.getAttribute('href');
                     const targetElement = document.querySelector(targetId);
-                    
+
                     if (targetElement) {
                         const navbarCollapse = document.querySelector('.navbar-collapse');
                         if (navbarCollapse.classList.contains('show')) {
                             const bsCollapse = new bootstrap.Collapse(navbarCollapse);
                             bsCollapse.hide();
                         }
-                        
+
                         window.scrollTo({
                             top: targetElement.offsetTop - 80,
                             behavior: 'smooth'
@@ -738,35 +1025,37 @@
                     }
                 });
             });
-            
+
             window.addEventListener('scroll', function() {
                 const sections = document.querySelectorAll('section[id]');
                 const scrollPosition = window.scrollY + 100;
-                
+
                 sections.forEach(section => {
                     const sectionTop = section.offsetTop;
                     const sectionHeight = section.offsetHeight;
                     const sectionId = section.getAttribute('id');
-                    
-                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop +
+                        sectionHeight) {
                         document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
                             link.classList.remove('active');
                         });
-                        
-                        const activeLink = document.querySelector(`.navbar-nav .nav-link[href="#${sectionId}"]`);
+
+                        const activeLink = document.querySelector(
+                            `.navbar-nav .nav-link[href="#${sectionId}"]`);
                         if (activeLink) {
                             activeLink.classList.add('active');
                         }
                     }
                 });
-                
+
                 if (window.scrollY > 50) {
                     document.querySelector('.navbar').classList.add('scrolled');
                 } else {
                     document.querySelector('.navbar').classList.remove('scrolled');
                 }
             });
-            
+
             document.querySelector('.navbar-nav .nav-link[href="#hero"]').classList.add('active');
         });
     </script>

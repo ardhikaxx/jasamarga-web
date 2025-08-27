@@ -151,20 +151,29 @@
             height: auto;
         }
 
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        .is-invalid:focus {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .auth-card {
                 border-radius: 15px;
             }
-            
+
             .card-body {
                 padding: 25px !important;
             }
-            
+
             .header-logo {
                 max-width: 180px;
             }
-            
+
             .btn-login {
                 font-size: 14px;
                 padding: 8px 12px;
@@ -176,24 +185,24 @@
                 padding-left: 15px;
                 padding-right: 15px;
             }
-            
+
             .card-body {
                 padding: 20px 15px !important;
             }
-            
+
             .header-logo {
                 max-width: 150px;
             }
-            
+
             .form-label {
                 font-size: 15px;
             }
-            
+
             .form-control {
                 padding: 10px 12px;
                 font-size: 14px;
             }
-            
+
             .auth-btn {
                 height: 44px;
                 font-size: 15px;
@@ -206,9 +215,10 @@
     <div class="container mb-0">
         <div class="d-flex align-items-center justify-content-between pt-3">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo" class="header-logo">
+                <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo"
+                    class="header-logo">
             </a>
-            @if(Request::is('login'))
+            @if (Request::is('login'))
                 <a href="{{ url('/register') }}" class="btn btn-login">Register</a>
             @elseif(Request::is('register'))
                 <a href="{{ url('/login') }}" class="btn btn-login">Login</a>
@@ -222,7 +232,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
-        @if(session('success'))
+        @if (session('success'))
             Swal.fire({
                 icon: 'success',
                 title: '{{ session('success') }}',
@@ -236,8 +246,8 @@
                 }
             });
         @endif
-        
-        @if(session('login_success'))
+
+        @if (session('login_success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Login Berhasil!',

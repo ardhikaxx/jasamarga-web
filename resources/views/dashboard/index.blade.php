@@ -13,15 +13,6 @@
                             <h5 class="text-uppercase text-muted fw-bold mb-2">JALAN SUDAH DI SFO</h5>
                             <h2 class="fw-bold text-primary mb-0" style="font-size: 32px;">10.0 KM</h2>
                         </div>
-                        <div class="d-flex justify-content-end mt-3">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <select class="form-select rounded-3 form-select-sm w-auto border-2 border-primary fw-semibold text-muted" style="box-shadow:none;">
-                                    <option selected>2025</option>
-                                    <option>2024</option>
-                                    <option>2023</option>
-                                </select>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -33,16 +24,6 @@
                         <div class="text-center">
                             <h5 class="text-uppercase text-muted fw-bold mb-2">JALAN BELUM DI SFO</h5>
                             <h2 class="fw-bold text-center text-primary mb-0" style="font-size: 32px;">10.0 KM</h2>
-                        </div>
-                        <div class="d-flex justify-content-end mt-3">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <select class="form-select rounded-3 border-primary border-2 form-select-sm w-auto fw-semibold text-muted"
-                                    style="box-shadow:none;">
-                                    <option selected>2025</option>
-                                    <option>2024</option>
-                                    <option>2023</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                 </div>

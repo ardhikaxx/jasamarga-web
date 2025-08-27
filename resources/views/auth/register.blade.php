@@ -20,7 +20,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('register') }}">
+                <form method="POST" action="{{ route('register') }}" id="registerForm">
                     @csrf
 
                     <div class="row">
@@ -75,4 +75,84 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = this.elements['username'].value.trim();
+            const fullname = this.elements['fullname'].value.trim();
+            const email = this.elements['email'].value.trim();
+            const password = this.elements['password'].value;
+            const passwordConfirmation = this.elements['password_confirmation'].value;
+            
+            let errors = [];
+            
+            // Validasi username
+            if (!username) {
+                errors.push('Username harus diisi');
+                this.elements['username'].classList.add('is-invalid');
+            } else {
+                this.elements['username'].classList.remove('is-invalid');
+            }
+            
+            // Validasi fullname
+            if (!fullname) {
+                errors.push('Nama lengkap harus diisi');
+                this.elements['fullname'].classList.add('is-invalid');
+            } else {
+                this.elements['fullname'].classList.remove('is-invalid');
+            }
+            
+            // Validasi email
+            if (!email) {
+                errors.push('Email harus diisi');
+                this.elements['email'].classList.add('is-invalid');
+            } else if (!/\S+@\S+\.\S+/.test(email)) {
+                errors.push('Format email tidak valid');
+                this.elements['email'].classList.add('is-invalid');
+            } else {
+                this.elements['email'].classList.remove('is-invalid');
+            }
+            
+            // Validasi password
+            if (!password) {
+                errors.push('Password harus diisi');
+                this.elements['password'].classList.add('is-invalid');
+            } else if (password.length < 8) {
+                errors.push('Password minimal 8 karakter');
+                this.elements['password'].classList.add('is-invalid');
+            } else {
+                this.elements['password'].classList.remove('is-invalid');
+            }
+            
+            // Validasi konfirmasi password
+            if (!passwordConfirmation) {
+                errors.push('Konfirmasi password harus diisi');
+                this.elements['password_confirmation'].classList.add('is-invalid');
+            } else if (password !== passwordConfirmation) {
+                errors.push('Konfirmasi password tidak cocok');
+                this.elements['password_confirmation'].classList.add('is-invalid');
+            } else {
+                this.elements['password_confirmation'].classList.remove('is-invalid');
+            }
+            
+            // Jika ada error, tampilkan SweetAlert
+            if (errors.length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Form tidak valid',
+                    html: '<ul class="text-start"><li>' + errors.join('</li><li>') + '</li></ul>',
+                    background: '#DEF1FF',
+                    color: '#0069ab',
+                    iconColor: '#e74c3c',
+                    confirmButtonColor: '#0095de'
+                });
+                return;
+            }
+            
+            // Jika validasi sukses, submit form
+            this.submit();
+        });
+    </script>
 @endsection

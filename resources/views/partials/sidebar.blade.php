@@ -39,7 +39,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ request()->is('daftar-sfo') ? 'active' : '' }} d-flex align-items-center" href="{{ route('daftar-sfo') }}">
                     <i class="bi bi-file-earmark-excel me-3"></i>
-                    <span>Download Excel</span>
+                    <span>Daftar SFO</span>
                 </a>
             </li>
             

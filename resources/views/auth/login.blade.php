@@ -20,7 +20,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login') }}" id="loginForm">
                     @csrf
                     <div class="mb-4">
                         <label class="form-label">Username</label>
@@ -52,4 +52,43 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = this.elements['username'].value.trim();
+            const password = this.elements['password'].value.trim();
+            let errors = [];
+            
+            if (!username) {
+                errors.push('Username harus diisi');
+                this.elements['username'].classList.add('is-invalid');
+            } else {
+                this.elements['username'].classList.remove('is-invalid');
+            }
+            
+            if (!password) {
+                errors.push('Password harus diisi');
+                this.elements['password'].classList.add('is-invalid');
+            } else {
+                this.elements['password'].classList.remove('is-invalid');
+            }
+            
+            if (errors.length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Form tidak valid',
+                    html: '<ul class="text-start"><li>' + errors.join('</li><li>') + '</li></ul>',
+                    background: '#DEF1FF',
+                    color: '#0069ab',
+                    iconColor: '#e74c3c',
+                    confirmButtonColor: '#0095de'
+                });
+                return;
+            }
+            
+            this.submit();
+        });
+    </script>
 @endsection

@@ -13,21 +13,23 @@
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
-                                <label for="kmAwal" class="form-label text-primary h5">KM Awal</label>
+                                <label for="lokasiAwal" class="form-label text-primary h5">Lokasi Awal</label>
                             </div>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="kmAwal" placeholder="Masukan KM Awal">
+                                <input type="text" class="form-control" id="lokasiAwal"
+                                    placeholder="Masukkan Lokasi Awal">
                             </div>
                         </div>
+
                         <div class="col-12 col-md-6">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
-                                <label for="kmAkhir" class="form-label text-primary h5">KM Akhir</label>
+                                <label for="lokasiAkhir" class="form-label text-primary h5">Lokasi Akhir</label>
                             </div>
-
                             <div class="input-group">
-                                <input type="text" class="form-control" id="kmAkhir" placeholder="Masukan KM Akhir">
+                                <input type="text" class="form-control" id="lokasiAkhir"
+                                    placeholder="Masukkan Lokasi Akhir">
                             </div>
                         </div>
                     </div>
@@ -52,8 +54,11 @@
                                 <label for="tahun" class="form-label text-primary h5">Tahun</label>
                             </div>
                             <div class="input-group">
-                                <input type="month" class="form-control" id="tahun" name="tahun"
-                                    placeholder="Pilih Tahun">
+                                <select class="form-control" id="tahun" name="tahun">
+                                    @for ($i = date('Y'); $i >= 2000; $i--)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -140,20 +145,21 @@
             .card-body {
                 padding: 20px 15px;
             }
-            
+
             .form-group-header {
                 margin-top: 15px;
             }
-            
-            .input-group, .form-select {
+
+            .input-group,
+            .form-select {
                 margin-bottom: 10px;
             }
-            
+
             .btn-primary {
                 width: 100%;
                 margin-top: 15px;
             }
-            
+
             .d-flex.justify-content-end {
                 justify-content: center !important;
             }
