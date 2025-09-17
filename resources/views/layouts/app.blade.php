@@ -230,7 +230,7 @@
                 icon: 'success',
                 title: '{{ session('success') }}',
                 showConfirmButton: false,
-                timer: 2500,
+                timer: 2000,
                 background: '#DEF1FF',
                 color: '#0069ab',
                 iconColor: '#0095de',
