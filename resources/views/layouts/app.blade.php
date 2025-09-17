@@ -225,7 +225,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
-        @if(session('success'))
+        @if (session('success') && session('sfo_date'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                html: 'Data SFO pada tanggal <strong>{{ session('sfo_date') }}</strong> berhasil disimpan',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#DEF1FF',
+                color: '#0069ab',
+                iconColor: '#0095de',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            });
+        @elseif (session('success'))
             Swal.fire({
                 icon: 'success',
                 title: '{{ session('success') }}',
@@ -239,8 +253,8 @@
                 }
             });
         @endif
-        
-        @if(session('login_success'))
+
+        @if (session('login_success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Login Berhasil!',
@@ -255,11 +269,9 @@
                 }
             });
         @endif
-        
-        // Fungsi untuk konfirmasi logout
+
         function confirmLogout(event) {
             event.preventDefault();
-            
             Swal.fire({
                 title: 'Konfirmasi Logout',
                 text: 'Apakah Anda yakin ingin keluar dari sistem?',
@@ -279,7 +291,6 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Submit form logout
                     document.getElementById('logout-form').submit();
                 }
             });

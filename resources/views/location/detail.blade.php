@@ -21,13 +21,13 @@
                             <div class="col-md-6">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Lokasi SFO:</span>
-                                    <span id="lokasi-sfo">Jakarta - Surabaya</span>
+                                    <span id="lokasi-sfo">{{ $sfo->lokasi_awal }} - {{ $sfo->lokasi_akhir }}</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Posisi Jalur:</span>
-                                    <span id="posisi-jalur">KM 25+200 - KM 25+800</span>
+                                    <span id="posisi-jalur">{{ $sfo->posisi_awal }} - {{ $sfo->posisi_akhir }}</span>
                                 </div>
                             </div>
                         </div>
@@ -36,25 +36,25 @@
                             <div class="col-md-3">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Panjang:</span>
-                                    <span id="panjang">600 m</span>
+                                    <span id="panjang">{{ number_format($sfo->panjang, 2) }} m</span>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Lebar:</span>
-                                    <span id="lebar">8 m</span>
+                                    <span id="lebar">{{ number_format($sfo->lebar, 2) }} m</span>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Tebal:</span>
-                                    <span id="tebal">25 cm</span>
+                                    <span id="tebal">{{ number_format($sfo->tebal, 2) }} m</span>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Luas:</span>
-                                    <span id="luas">4800 m²</span>
+                                    <span id="luas">{{ number_format($sfo->luas, 2) }} m²</span>
                                 </div>
                             </div>
                         </div>
@@ -63,7 +63,14 @@
                             <div class="col-md-6">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Tanggal SFO:</span>
-                                    <span id="tanggal-sfo">15-08-2025</span>
+                                    <span
+                                        id="tanggal-sfo">{{ \Carbon\Carbon::parse($sfo->tanggal_sfo)->format('d-m-Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <span class="fw-bold text-secondary">Jalur SFO:</span>
+                                    <span id="jalur-sfo">{{ $sfo->jalur_sfo }}</span>
                                 </div>
                             </div>
                         </div>
@@ -72,8 +79,7 @@
                             <div class="col-md-12">
                                 <div class="info-item">
                                     <span class="fw-bold text-secondary">Keterangan:</span>
-                                    <span id="keterangan">Perbaikan jalur arah timur, penggantian beton lama dengan rigid
-                                        pavement.</span>
+                                    <span id="keterangan">{{ $sfo->keterangan ?? 'Tidak ada keterangan' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -143,43 +149,77 @@
             const canvas = document.getElementById("sfoCanvas");
             const ctx = canvas.getContext("2d");
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const selectedJalur = parseInt(urlParams.get("jalur")) || 1;
+            // Data dari database
+            const jalurSFO = "{{ $sfo->jalur_sfo }}";
+            const posisiAwal = "{{ $sfo->posisi_awal }}";
+            const posisiAkhir = "{{ $sfo->posisi_akhir }}";
+            const tahunSFO = "{{ \Carbon\Carbon::parse($sfo->tanggal_sfo)->format('Y') }}";
 
-            // Dummy data (nanti diganti dari database)
+            // Mapping jalur ke angka
+            let selectedJalur = 1;
+            const jalurMapping = {
+                'Jalur Tol Bogor': 1,
+                'Jalur Tol Jakarta': 2,
+                'Jalur Tol Cikampek': 3,
+                // Tambahkan mapping lainnya sesuai data yang ada
+            };
+
+            // Cari jalur yang cocok (partial match)
+            for (const [key, value] of Object.entries(jalurMapping)) {
+                if (jalurSFO.includes(key)) {
+                    selectedJalur = value;
+                    break;
+                }
+            }
+
+            // Ekstrak angka KM dari string
+            function parseKM(kmString) {
+                if (!kmString) return 0;
+
+                // Coba format "KM XX+XXX"
+                let match = kmString.match(/KM\s*(\d+)\+(\d+)/i);
+                if (match) {
+                    const km = parseInt(match[1]);
+                    const meter = parseInt(match[2]);
+                    return km + (meter / 1000);
+                }
+
+                // Coba format "KM XX"
+                match = kmString.match(/KM\s*(\d+)/i);
+                if (match) {
+                    return parseInt(match[1]);
+                }
+
+                // Coba format angka saja
+                match = kmString.match(/(\d+)/);
+                if (match) {
+                    return parseInt(match[1]);
+                }
+
+                return 0;
+            }
+
+            const kmAwal = parseKM(posisiAwal);
+            const kmAkhir = parseKM(posisiAkhir) || kmAwal + 1; // Default jika tidak ada akhir
+
+            // Data untuk grafik
             const dataSFO = [{
-                    km_awal: 0,
-                    km_akhir: 1,
-                    warna: "blue",
-                    tahun: "2022"
-                },
-                {
-                    km_awal: 1,
-                    km_akhir: 2,
-                    warna: "green",
-                    tahun: "2023"
-                },
-                {
-                    km_awal: 2,
-                    km_akhir: 3,
-                    warna: "blue",
-                    tahun: "2024"
-                },
-                {
-                    km_awal: 3,
-                    km_akhir: 4,
-                    warna: "blue",
-                    tahun: "2025"
-                },
-            ];
+                km_awal: kmAwal,
+                km_akhir: kmAkhir,
+                warna: "blue",
+                tahun: tahunSFO
+            }];
 
-            // posisi Y untuk tiap jalur (lebih renggang)
+            // posisi Y untuk tiap jalur
             const jalurY = {
                 1: 100,
                 2: 230,
                 3: 360
             };
-            const kmStep = 200; // lebar per KM
+
+            // Tentukan kmStep berdasarkan rentang KM
+            const maxKM = Math.max(kmAkhir, 4); // Minimal 4 KM untuk tampilan
+            const kmStep = 800 / maxKM; // Lebar canvas 800px
 
             function drawArrow(x, y) {
                 ctx.beginPath();
@@ -212,14 +252,16 @@
                     ctx.font = "14px Arial";
                     ctx.fillText(item.tahun, startX + width / 2 - 15, y + 65);
 
-                    // panah (semua jalur ada panah)
-                    drawArrow(startX + width / 2, y);
+                    // panah
+                    if (jalur == selectedJalur) {
+                        drawArrow(startX + width / 2, y);
+                    }
                 });
 
                 // KM label di atas jalur
                 ctx.fillStyle = "#000";
                 ctx.font = "14px Arial";
-                for (let km = 0; km <= 4; km++) {
+                for (let km = 0; km <= maxKM; km++) {
                     ctx.fillText("KM " + km, 50 + km * kmStep, y - 15);
                 }
             }

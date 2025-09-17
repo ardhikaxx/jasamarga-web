@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\LocationController;
 
 Route::get('/', function () {
     return view('index');
@@ -21,17 +22,16 @@ Route::middleware(['auth:admin'])->group(function () {
         return view('dashboard.index');
     })->name('dashboard');
 
-    Route::get('/check-location', function () {
-        return view('location.check');
-    })->name('check-location');
+    // Update route check-location ke controller
+    Route::get('/check-location', [LocationController::class, 'showCheckForm'])->name('check-location');
+    Route::post('/check-location', [LocationController::class, 'checkLocation'])->name('check-location.process');
 
-    Route::get('/input-location', function () {
-        return view('location.input');
-    })->name('input-location');
+    // Update route input-location ke controller
+    Route::get('/input-location', [LocationController::class, 'showInputForm'])->name('input-location');
+    Route::post('/input-location', [LocationController::class, 'store'])->name('input-location.store');
 
-    Route::get('/location-sfo', function () {
-        return view('location.detail');
-    })->name('location-sfo');
+    // Route untuk detail SFO
+    Route::get('/location-sfo/{id}', [LocationController::class, 'showSfoDetails'])->name('location-sfo');
 
     Route::get('/daftar-sfo', function () {
         return view('download.index');
