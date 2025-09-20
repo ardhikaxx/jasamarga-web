@@ -16,7 +16,8 @@ use Illuminate\Support\Str;
                     </a>
                 </div>
 
-                @if(session('success'))
+                <!-- Hapus alert biasa -->
+                <!-- @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -28,7 +29,7 @@ use Illuminate\Support\Str;
                         {{ session('error') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                @endif
+                @endif -->
 
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -55,10 +56,10 @@ use Illuminate\Support\Str;
                                             <a href="{{ route('work.edit', $work->id) }}" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <form action="{{ route('work.destroy', $work->id) }}" method="POST" class="d-inline">
+                                            <form action="{{ route('work.destroy', $work->id) }}" method="POST" class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus jenis pekerjaan ini?')">
+                                                <button type="submit" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Hapus">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -126,6 +127,92 @@ use Illuminate\Support\Str;
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // SweetAlert untuk notifikasi sukses
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 2500,
+                    background: '#DEF1FF',
+                    color: '#0069ab',
+                    iconColor: '#0095de',
+                    customClass: {
+                        popup: 'swal2-popup'
+                    }
+                });
+            @endif
+
+            // SweetAlert untuk notifikasi error
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: '{{ session('error') }}',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    background: '#FFE6E6',
+                    color: '#a30000',
+                    iconColor: '#d33',
+                    customClass: {
+                        popup: 'swal2-popup'
+                    }
+                });
+            @endif
+
+            // SweetAlert untuk konfirmasi hapus
+            const deleteForms = document.querySelectorAll('.delete-form');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Dapatkan jumlah aktivitas dari baris tabel
+                    const activityCount = parseInt(this.closest('tr').querySelector('td:nth-child(4)').textContent);
+                    
+                    // Jika jenis pekerjaan memiliki aktivitas, tampilkan peringatan
+                    if (activityCount > 0) {
+                        Swal.fire({
+                            title: 'Tidak Dapat Dihapus',
+                            html: `Jenis pekerjaan ini memiliki <strong>${activityCount} aktivitas</strong> yang terkait. <br>Hapus semua aktivitas terlebih dahulu sebelum menghapus jenis pekerjaan.`,
+                            icon: 'warning',
+                            confirmButtonColor: '#00a4f4',
+                            confirmButtonText: 'Mengerti',
+                            background: '#FFF9E6',
+                            color: '#856404',
+                            iconColor: '#f0ad4e',
+                            customClass: {
+                                popup: 'swal2-popup'
+                            }
+                        });
+                        return;
+                    }
+                    
+                    Swal.fire({
+                        title: 'Konfirmasi Hapus',
+                        text: 'Apakah Anda yakin ingin menghapus jenis pekerjaan ini?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Hapus',
+                        cancelButtonText: 'Batal',
+                        background: '#FFF0F0',
+                        color: '#a30000',
+                        iconColor: '#d33',
+                        customClass: {
+                            popup: 'swal2-popup',
+                            confirmButton: 'btn-delete-confirm',
+                            cancelButton: 'btn-delete-cancel'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
             });
         });
     </script>
