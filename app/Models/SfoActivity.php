@@ -11,16 +11,17 @@ class SfoActivity extends Model
 
     protected $table = 'sfo_activities';
     protected $fillable = [
-        'project_id', 
-        'tanggal_sfo', 
-        'sta_awal', 
-        'sta_akhir', 
+        'project_id',
+        'tanggal_sfo',
+        'sta_awal',
+        'sta_akhir',
         'location_id',
-        'panjang', 
-        'lebar', 
-        'tebal', 
-        'luas', 
+        'panjang',
+        'lebar',
+        'tebal',
+        'luas',
         'work_type_id',
+        'status',
         'notes'
     ];
 
@@ -29,7 +30,8 @@ class SfoActivity extends Model
         'panjang' => 'decimal:2',
         'lebar' => 'decimal:2',
         'tebal' => 'decimal:2',
-        'luas' => 'decimal:2'
+        'luas' => 'decimal:2',
+        'status' => 'string',
     ];
 
     public function projek()

@@ -3,7 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\WorkController;
+use App\Http\Controllers\SFOController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CheckLocationController;
 
 Route::get('/', function () {
     return view('index');
@@ -18,24 +23,27 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected Routes
 Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    //dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Update route check-location ke controller
-    Route::get('/check-location', [LocationController::class, 'showCheckForm'])->name('check-location');
-    Route::post('/check-location', [LocationController::class, 'checkLocation'])->name('check-location.process');
+    // API untuk grafik (jika diperlukan)
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'getChartData'])->name('dashboard.chart-data');
 
-    // Update route input-location ke controller
-    Route::get('/input-location', [LocationController::class, 'showInputForm'])->name('input-location');
-    Route::post('/input-location', [LocationController::class, 'store'])->name('input-location.store');
+    Route::resource('projects', ProjectController::class);
+    Route::resource('locations', LocationController::class);
+    Route::resource('work', WorkController::class);
 
-    // Route untuk detail SFO
-    Route::get('/location-sfo/{id}', [LocationController::class, 'showSfoDetails'])->name('location-sfo');
+    // SFO Routes
+    Route::resource('sfo', SFOController::class);
+    Route::post('sfo/{sfo}/update-status', [SFOController::class, 'updateStatus'])->name('sfo.update-status');
+    Route::post('sfo/calculate-luas', [SFOController::class, 'calculateLuas'])->name('sfo.calculate-luas');
+    Route::get('sfo/download', [SFOController::class, 'download'])->name('sfo.download');
 
-    Route::get('/daftar-sfo', function () {
-        return view('download.index');
-    })->name('daftar-sfo');
+    // Check Location Routes
+    Route::get('/check-location', [CheckLocationController::class, 'index'])->name('check-location');
+    Route::post('/check-location', [CheckLocationController::class, 'check'])->name('check-location.process');
+    Route::get('/check-location/detail/{id}', [CheckLocationController::class, 'detail'])->name('check-location.detail');
+    Route::get('/check-location/sta-data', [CheckLocationController::class, 'getStaData'])->name('check-location.sta-data');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');

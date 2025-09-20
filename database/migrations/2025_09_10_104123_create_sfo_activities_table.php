@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->decimal('tebal', 10, 2);
             $table->decimal('luas', 10, 2);
             $table->foreignId('work_type_id')->constrained()->onDelete('cascade');
+            $table->enum('status', ['Unprocessed', 'Process', 'Done'])->default('Unprocessed');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

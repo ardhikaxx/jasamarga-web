@@ -1,55 +1,67 @@
 <div class="sidebar">
     <div class="sidebar-header">
-        <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo" class="sidebar-logo">
+        <img src="{{ asset('images/9700334a6a74713fc8b77fdf69662bdc353cc38d.png') }}" alt="Jasamarga Logo"
+            class="sidebar-logo">
     </div>
-    
+
     <div class="sidebar-menu">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }} d-flex align-items-center" href="{{ route('dashboard') }}">
+                <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('dashboard') }}">
                     <i class="bi bi-speedometer2 me-3"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
-            
+
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('location*') ? 'active' : '' }} d-flex align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#locationMenu" aria-expanded="{{ request()->is('location*') ? 'true' : 'false' }}">
+                <a class="nav-link {{ request()->is('projects*') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('projects.index') }}">
+                    <i class="bi bi-folder me-3"></i>
+                    <span>Manajemen Projek</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('locations*') && !request()->is('locations/create') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('locations.index') }}">
+                    <i class="bi bi-list-check me-3"></i>
+                    <span>Manajemen Lokasi</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('work*') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('work.index') }}">
+                    <i class="bi bi-briefcase me-3"></i>
+                    <span>Manajemen Pekerjaan</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('sfo*') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('sfo.index') }}">
+                    <i class="bi bi-clipboard-data me-3"></i>
+                    <span>Manajemen SFO</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('check-location') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('check-location') }}">
                     <i class="bi bi-geo-alt me-3"></i>
-                    <span>Location</span>
-                    <i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <div class="collapse {{ request()->is('location*') ? 'show' : '' }}" id="locationMenu">
-                    <ul class="nav flex-column ps-3">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('check-location') ? 'active' : '' }} d-flex align-items-center" href="{{ route('check-location') }}">
-                                <i class="bi bi-eye me-2"></i>
-                                <span>Cek Lokasi</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('input-location') ? 'active' : '' }} d-flex align-items-center" href="{{ route('input-location') }}">
-                                <i class="bi bi-pencil-square me-2"></i>
-                                <span>Input Lokasi</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('daftar-sfo') ? 'active' : '' }} d-flex align-items-center" href="{{ route('daftar-sfo') }}">
-                    <i class="bi bi-file-earmark-excel me-3"></i>
-                    <span>Daftar SFO</span>
+                    <span>Cek Lokasi</span>
                 </a>
             </li>
-            
+
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings') ? 'active' : '' }} d-flex align-items-center" href="{{ route('settings') }}">
+                <a class="nav-link {{ request()->is('settings') ? 'active' : '' }} d-flex align-items-center"
+                    href="{{ route('settings') }}">
                     <i class="bi bi-gear me-3"></i>
                     <span>Settings</span>
                 </a>
             </li>
-            
+
             <li class="nav-item mt-3">
                 <a class="nav-link d-flex align-items-center text-danger" href="#" onclick="confirmLogout(event)">
                     <i class="bi bi-box-arrow-left me-3"></i>
