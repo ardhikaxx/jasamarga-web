@@ -6,6 +6,10 @@ use App\Models\SfoActivity;
 use App\Models\Project;
 use App\Models\Location;
 use App\Models\WorkType;
+use App\Exports\SfoExport;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -73,7 +77,14 @@ class SFOController extends Controller
         $locations = Location::all();
         $workTypes = WorkType::all();
 
-        return view('data_sfo.index', compact('sfoActivities', 'projects', 'locations', 'workTypes'));
+        // Ambil data projek untuk modal
+        $modalProjects = Project::select('id', 'nama_projek', 'tahun_projek', 'lokasi')
+            ->orderBy('nama_projek')
+            ->paginate(5)
+            ->withQueryString();
+
+
+        return view('data_sfo.index', compact('sfoActivities', 'projects', 'locations', 'workTypes', 'modalProjects'));
     }
 
     /**
@@ -267,65 +278,46 @@ class SFOController extends Controller
     }
 
     /**
-     * Download SFO data
+     * Export SFO report by project or year
      */
-    public function download(Request $request)
+    /**
+     * Export SFO report by project or year
+     */
+    public function exportReport(Request $request)
     {
-        $query = SfoActivity::with(['projek', 'lokasi', 'jenisPekerjaan'])
-            ->orderBy('tanggal_sfo', 'desc');
+        try {
+            $projectId = $request->input('project_id');
+            $year = $request->input('year');
 
-        // Apply filters if any
-        if ($request->has('filter_type')) {
-            switch ($request->filter_type) {
-                case 'pertanggal':
-                    if ($request->has('tgl_awal') && $request->has('tgl_akhir')) {
-                        $query->whereBetween('tanggal_sfo', [$request->tgl_awal, $request->tgl_akhir]);
-                    }
-                    break;
-
-                case 'perbulan':
-                    if ($request->has('bulan')) {
-                        $month = date('m', strtotime($request->bulan));
-                        $year = date('Y', strtotime($request->bulan));
-                        $query->whereYear('tanggal_sfo', $year)
-                            ->whereMonth('tanggal_sfo', $month);
-                    }
-                    break;
-
-                case 'pertahun':
-                    if ($request->has('tahun')) {
-                        $query->whereYear('tanggal_sfo', $request->tahun);
-                    }
-                    break;
+            // Validasi: harus ada project_id atau year
+            if (!$projectId && !$year) {
+                return redirect()->back()
+                    ->with('error', 'Pilih projek atau tahun untuk mengekspor data.');
             }
+
+            $fileName = 'laporan_sfo';
+
+            if ($projectId) {
+                $project = Project::find($projectId);
+                if (!$project) {
+                    return redirect()->back()
+                        ->with('error', 'Projek tidak ditemukan.');
+                }
+                $fileName .= '_' . Str::slug($project->nama_projek, '_');
+            }
+
+            if ($year) {
+                $fileName .= '_' . $year;
+            }
+
+            $fileName .= '.xlsx';
+
+            return Excel::download(new SfoExport($projectId, $year), $fileName);
+
+        } catch (\Exception $e) {
+            Log::error('Export error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $sfoActivities = $query->get();
-
-        // Generate CSV content
-        $csvData = "No,Tanggal SFO,Projek,STA Awal,STA Akhir,Lokasi,Panjang (m),Lebar (m),Tebal (m),Luas (m²),Jenis Pekerjaan,Status,Catatan\n";
-
-        foreach ($sfoActivities as $index => $activity) {
-            $csvData .= ($index + 1) . ",";
-            $csvData .= $activity->tanggal_sfo . ",";
-            $csvData .= '"' . $activity->projek->nama_projek . '",';
-            $csvData .= $activity->sta_awal . ",";
-            $csvData .= $activity->sta_akhir . ",";
-            $csvData .= '"' . $activity->lokasi->jalur . ' - ' . $activity->lokasi->lajur . '",';
-            $csvData .= $activity->panjang . ",";
-            $csvData .= $activity->lebar . ",";
-            $csvData .= $activity->tebal . ",";
-            $csvData .= $activity->luas . ",";
-            $csvData .= '"' . $activity->jenisPekerjaan->nama_pekerjaan . '",';
-            $csvData .= $activity->status . ",";
-            $csvData .= '"' . ($activity->notes ?? '-') . '"';
-            $csvData .= "\n";
-        }
-
-        $filename = 'sfo_data_' . date('Ymd_His') . '.csv';
-
-        return response($csvData)
-            ->header('Content-Type', 'text/csv')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 }

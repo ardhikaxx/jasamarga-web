@@ -37,7 +37,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::resource('sfo', SFOController::class);
     Route::post('sfo/{sfo}/update-status', [SFOController::class, 'updateStatus'])->name('sfo.update-status');
     Route::post('sfo/calculate-luas', [SFOController::class, 'calculateLuas'])->name('sfo.calculate-luas');
-    Route::get('sfo/download', [SFOController::class, 'download'])->name('sfo.download');
+    // routes/web.php
+Route::get('export-sfo', [SFOController::class, 'exportReport'])->name('export.sfo');
 
     // Check Location Routes
     Route::get('/check-location', [CheckLocationController::class, 'index'])->name('check-location');

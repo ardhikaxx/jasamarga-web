@@ -3,15 +3,139 @@
 @section('title', 'Manajemen Data SFO')
 
 @section('content')
+    <div class="modal fade" id="dataSFOModal" tabindex="-1" aria-labelledby="dataSFOModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title fw-bold text-center" id="locationModalLabel">EXPORT LAPORAN SFO</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Export Berdasarkan Tahun</h5>
+                                    <form action="{{ route('export.sfo') }}" method="GET" class="row g-3">
+                                        @csrf
+                                        <div class="col-md-8">
+                                            <select class="form-select" name="year" required>
+                                                <option value="">Pilih Tahun</option>
+                                                @for ($i = date('Y'); $i >= 2020; $i--)
+                                                    <option value="{{ $i }}">{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="bi bi-download me-2"></i> Export
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3">Export Berdasarkan Projek</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle text-center">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th scope="col">Nama Projek</th>
+                                    <th scope="col">Tahun Projek</th>
+                                    <th scope="col">Lokasi</th>
+                                    <th scope="col">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($modalProjects as $project)
+                                    <tr>
+                                        <td>{{ $project->nama_projek }}</td>
+                                        <td>{{ $project->tahun_projek }}</td>
+                                        <td>{{ $project->lokasi }}</td>
+                                        <td>
+                                            <form action="{{ route('export.sfo') }}" method="GET" class="d-inline">
+                                                <input type="hidden" name="project_id" value="{{ $project->id }}">
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-download me-1"></i> Export
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    @if ($modalProjects->hasPages())
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="text-muted">
+                                Menampilkan {{ $modalProjects->firstItem() }} - {{ $modalProjects->lastItem() }} dari
+                                {{ $modalProjects->total() }} data
+                            </div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination mb-0">
+                                    {{-- Previous Page Link --}}
+                                    @if ($modalProjects->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&laquo;</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $modalProjects->previousPageUrl() }}"
+                                                rel="prev">&laquo;</a>
+                                        </li>
+                                    @endif
+
+                                    {{-- Pagination Elements --}}
+                                    @foreach ($modalProjects->getUrlRange(1, $modalProjects->lastPage()) as $page => $url)
+                                        @if ($page == $modalProjects->currentPage())
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    {{-- Next Page Link --}}
+                                    @if ($modalProjects->hasMorePages())
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ $modalProjects->nextPageUrl() }}"
+                                                rel="next">&raquo;</a>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link">&raquo;</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="card">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h3 class="text-primary fw-bold">Manajemen Data SFO</h3>
                     <div class="d-flex justify-content-end mt-3 gap-3">
-                        <a href="{{ route('sfo.download', request()->all()) }}" class="btn btn-primary">
-                            <i class="bi bi-download me-2"></i> Download CSV
-                        </a>
+                        <button class="btn btn-primary" id="downloadCSVBtn" data-bs-toggle="modal"
+                            data-bs-target="#dataSFOModal">
+                            <i class="bi bi-download me-2"></i> Download Laporan
+                        </button>
                         <a href="{{ route('sfo.create') }}" class="btn btn-primary">
                             <i class="bi bi-plus-circle me-2"></i>Tambah Data SFO
                         </a>
@@ -314,6 +438,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const downloadCSVBtn = document.getElementById('downloadCSVBtn');
+
+            downloadCSVBtn.addEventListener('click', function() {
+                const dataSFOModal = new bootstrap.Modal(document.getElementById('dataSFOModal'));
+                dataSFOModal.show();
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
             const filterSelect = document.getElementById('filterSelect');
             const filterContainer = document.getElementById('filterContainer');
 
@@ -331,7 +466,7 @@
                                 </div>
                                 <div class="col">
                                     <label class="form-label">Tanggal Akhir</label>
-                                    <input type="date" class="form-control" name 'tgl_akhir' value="{{ request('tgl_akhir') }}">
+                                    <input type="date" class="form-control" name="tgl_akhir" value="{{ request('tgl_akhir') }}">
                                 </div>
                             </div>
                         `;

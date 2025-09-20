@@ -10,7 +10,9 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
-        "nesbot/carbon": "^2.73"
+        "maatwebsite/excel": "^3.1",
+        "nesbot/carbon": "^2.73",
+        "phpoffice/phpspreadsheet": "^1.30"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
