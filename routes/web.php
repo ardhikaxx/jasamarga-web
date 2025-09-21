@@ -9,10 +9,10 @@ use App\Http\Controllers\WorkController;
 use App\Http\Controllers\SFOController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CheckLocationController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('index');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/cek-lokasi-sfo', [HomeController::class, 'checkLocation'])->name('home.cekLokasiSfo');
 
 // Auth Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -616,76 +616,78 @@
         <div class="container">
             <div class="location-card">
                 <h2 class="location-title">CEK LOKASI SFO</h2>
-                <form class="location-form row g-3 d-flex justify-content-center">
+                <form id="cekLokasiForm" class="location-form row g-3 d-flex justify-content-center">
+                    @csrf
                     <div class="form-group col-md-3">
                         <div class="form-group-header">
                             <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                 class="form-icon">
-                            <label>Lokasi Awal</label>
+                            <label>STA Awal</label>
                         </div>
                         <div class="input-wrapper">
-                            <input type="text" placeholder="Masukan Lokasi Awal">
+                            <input type="number" name="sta_awal" placeholder="Mis: 25000" required>
                         </div>
                     </div>
                     <div class="form-group col-md-3">
                         <div class="form-group-header">
-                            <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
-                                class="form-icon">
-                            <label>Lokasi Sampai</label>
+                            <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}"
+                                alt="" class="form-icon">
+                            <label>STA Akhir</label>
                         </div>
                         <div class="input-wrapper">
-                            <input type="text" placeholder="Masukan Lokasi Akhir">
+                            <input type="number" name="sta_akhir" placeholder="Mis: 25800" required>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <div class="form-group-header">
+                            <img src="{{ asset('images/314_740.svg') }}" alt="" class="form-icon">
+                            <label>Jalur</label>
+                        </div>
+                        <div class="input-wrapper select-wrapper">
+                            <select name="jalur" required>
+                                <option value="" disabled selected>Pilih Jalur</option>
+                                @foreach ($jalurOptions as $jalur)
+                                    <option value="{{ $jalur }}">{{ $jalur }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="form-group col-md-2">
                         <div class="form-group-header">
                             <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}"
                                 alt="" class="form-icon">
-                            <label>Pilih Tahun</label>
+                            <label>Tahun</label>
                         </div>
                         <div class="input-wrapper select-wrapper">
-                            <select id="tahun" name="tahun">
-                                @for ($i = date('Y'); $i >= 2000; $i--)
-                                    <option value="{{ $i }}">{{ $i }}</option>
-                                @endfor
+                            <select name="tahun" required>
+                                <option value="" disabled selected>Pilih Tahun</option>
+                                @foreach ($tahunOptions as $tahun)
+                                    <option value="{{ $tahun }}">{{ $tahun }}</option>
+                                @endforeach
                             </select>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <div class="form-group-header">
-                            <img src="{{ asset('images/314_740.svg') }}" alt="" class="form-icon">
-                            <label>Posisi</label>
-                        </div>
-                        <div class="input-wrapper select-wrapper">
-                            <select>
-                                <option>Pilih Posisi Jalan</option>
-                            </select>
-                            <img src="{{ asset('images/I314_744_61_43.svg') }}" alt="dropdown arrow"
-                                class="select-arrow">
                         </div>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-check-location w-100">
-                            Cek Lokasi
-                            <img src="{{ asset('images/314_747.svg') }}" alt="">
-                        </button>
+                        <button type="submit" class="btn btn-check-location w-100">Cek Lokasi</button>
                     </div>
                 </form>
             </div>
         </div>
     </section>
 
-    <div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <!-- Modal -->
+    <div class="modal fade" id="sfoModal" tabindex="-1" aria-labelledby="sfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title fw-bold text-center" id="locationModalLabel">LOCATION SFO</h4>
+                    <h5 class="modal-title fw-bold" id="sfoModalLabel">Detail Lokasi SFO</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="modalBodyContent"></div>
+                <div class="modal-body" id="sfoModalBody">
+                    <!-- Content will be loaded here -->
+                </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -795,211 +797,182 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tangani submit form
-            const locationForm = document.querySelector('.location-form');
-            locationForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+        document.getElementById('cekLokasiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
 
-                // Tampilkan modal
-                const modal = new bootstrap.Modal(document.getElementById('locationModal'));
-                modal.show();
-
-                // Muat konten SFO ke dalam modal
-                loadSFOContent();
-            });
-
-            // Fungsi untuk memuat konten SFO
-            function loadSFOContent() {
-                const modalBody = document.getElementById('modalBodyContent');
-
-                // Tampilkan loading state
-                modalBody.innerHTML = `
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2">Memuat data SFO...</p>
-                </div>
-            `;
-
-                // Simulasi pengambilan data (dalam implementasi nyata, ini akan berupa AJAX request)
-                setTimeout(() => {
-                    // Konten dari detail.blade.php
-                    modalBody.innerHTML = `
-                    <div class="container-fluid">
-                        <div class="card border-0">
-                            <div class="card-body p-0">
-                                <div class="d-flex justify-content-center align-items-center mb-4">
-                                    <div class="canvas-wrapper" style="width: 100%; overflow-x: auto;">
-                                        <canvas id="sfoCanvas" width="900" height="400"></canvas>
-                                    </div>
-                                </div>
-
-                                <div class="keterangan-sfo w-100 bg-light p-3 rounded">
-                                    <h4 class="text-primary mb-3">Keterangan Data SFO</h4>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Lokasi SFO:</span>
-                                                <span id="lokasi-sfo">Jakarta - Surabaya</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Posisi Jalur:</span>
-                                                <span id="posisi-jalur">KM 25+200 - KM 25+800</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="col-md-3">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Panjang:</span>
-                                                <span id="panjang">600 m</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Lebar:</span>
-                                                <span id="lebar">8 m</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Tebal:</span>
-                                                <span id="tebal">25 cm</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Luas:</span>
-                                                <span id="luas">4800 m²</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Tanggal SFO:</span>
-                                                <span id="tanggal-sfo">15-08-2025</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="info-item bg-white p-2 rounded mb-2">
-                                                <span class="fw-bold text-secondary">Keterangan:</span>
-                                                <span id="keterangan">Perbaikan jalur arah timur, penggantian beton lama dengan rigid
-                                                    pavement.</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                    // Inisialisasi canvas setelah konten dimuat
-                    initSfoCanvas();
-                }, 1000);
-            }
-
-            // Fungsi untuk menggambar canvas SFO
-            function initSfoCanvas() {
-                const canvas = document.getElementById("sfoCanvas");
-                if (!canvas) return;
-
-                const ctx = canvas.getContext("2d");
-                const selectedJalur = 1; // Default jalur
-
-                // Dummy data
-                const dataSFO = [{
-                        km_awal: 0,
-                        km_akhir: 1,
-                        warna: "blue",
-                        tahun: "2022"
+            fetch("{{ route('home.cekLokasiSfo') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
                     },
-                    {
-                        km_awal: 1,
-                        km_akhir: 2,
-                        warna: "green",
-                        tahun: "2023"
-                    },
-                    {
-                        km_awal: 2,
-                        km_akhir: 3,
-                        warna: "blue",
-                        tahun: "2024"
-                    },
-                    {
-                        km_awal: 3,
-                        km_akhir: 4,
-                        warna: "blue",
-                        tahun: "2025"
-                    },
-                ];
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('sfoModalBody').innerHTML = data.html;
+                        const modal = new bootstrap.Modal(document.getElementById('sfoModal'));
+                        modal.show();
 
-                // Posisi Y untuk tiap jalur
-                const jalurY = {
-                    1: 100,
-                    2: 230,
-                    3: 360
-                };
-                const kmStep = 200; // Lebar per KM
-
-                function drawArrow(x, y) {
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
-                    ctx.lineTo(x, y - 25);
-                    ctx.lineTo(x - 5, y - 20);
-                    ctx.moveTo(x, y - 25);
-                    ctx.lineTo(x + 5, y - 20);
-                    ctx.strokeStyle = "#000";
-                    ctx.stroke();
-                }
-
-                function drawTrack(jalur) {
-                    let y = jalurY[jalur];
-
-                    // Garis dasar jalur
-                    ctx.fillStyle = (jalur == selectedJalur) ? "#e0e0e0" : "#f5f5f5";
-                    ctx.fillRect(50, y, 800, 40);
-
-                    // Blok-blok data
-                    dataSFO.forEach(item => {
-                        let startX = 50 + item.km_awal * kmStep;
-                        let width = (item.km_akhir - item.km_awal) * kmStep;
-
-                        ctx.fillStyle = (jalur == selectedJalur) ? item.warna : "#cfcfcf";
-                        ctx.fillRect(startX, y, width, 40);
-
-                        // Tahun label
-                        ctx.fillStyle = "#000";
-                        ctx.font = "14px Arial";
-                        ctx.fillText(item.tahun, startX + width / 2 - 15, y + 65);
-
-                        // Panah
-                        drawArrow(startX + width / 2, y);
-                    });
-
-                    // KM label di atas jalur
-                    ctx.fillStyle = "#000";
-                    ctx.font = "14px Arial";
-                    for (let km = 0; km <= 4; km++) {
-                        ctx.fillText("KM " + km, 50 + km * kmStep, y - 15);
+                        // Render canvas setelah modal ditampilkan
+                        renderSfoCanvas();
+                    } else {
+                        alert('Data SFO tidak ditemukan.');
                     }
-                }
+                })
+                .catch(err => {
+                    alert('Terjadi kesalahan saat memuat data.');
+                });
+        });
 
-                // Gambar semua jalur
-                drawTrack(1);
-                drawTrack(2);
-                drawTrack(3);
+        // Fungsi untuk merender canvas SFO
+        function renderSfoCanvas() {
+            const canvas = document.getElementById("sfoCanvas");
+            if (!canvas) return;
+
+            const ctx = canvas.getContext("2d");
+
+            // Ambil data dari atribut data
+            const staAwal = parseInt(canvas.getAttribute('data-sta-awal'));
+            const staAkhir = parseInt(canvas.getAttribute('data-sta-akhir'));
+            const jalur = canvas.getAttribute('data-jalur');
+            const lajur = canvas.getAttribute('data-lajur');
+            const tanggal = canvas.getAttribute('data-tanggal');
+            const workType = canvas.getAttribute('data-work-type');
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background
+            ctx.fillStyle = "#f8f9fa";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw info box
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#00a4f4";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(50, 70, canvas.width - 90, 90);
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw info text
+            ctx.fillStyle = "#000";
+            ctx.font = "14px Arial";
+            ctx.textAlign = "left";
+
+            // Row 2 - Tahun, Jalur, Lajur, STA
+            ctx.fillText(`Jalur: ${jalur}`, 70, 110);
+            ctx.fillText(`Lajur: ${lajur}`, 300, 110);
+            ctx.fillText(`STA: ${staAwal} - ${staAkhir}`, 600, 110);
+
+            // Row 3 - Tanggal dan Pekerjaan
+            ctx.fillText(`Tanggal: ${tanggal}`, 70, 135);
+            ctx.fillText(`Pekerjaan: ${workType}`, 300, 135);
+
+            // Draw road background
+            const roadY = 200;
+            const roadHeight = 100;
+            const roadStartX = 100;
+            const roadWidth = 800;
+
+            ctx.fillStyle = "#e9ecef";
+            ctx.fillRect(roadStartX - 20, roadY - 30, roadWidth + 40, roadHeight + 60);
+
+            // Draw road
+            ctx.fillStyle = "#6c757d";
+            ctx.fillRect(roadStartX, roadY, roadWidth, roadHeight);
+
+            // Draw lane markers
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 3;
+            ctx.setLineDash([15, 25]);
+
+            for (let i = 1; i < 4; i++) {
+                const laneX = roadStartX + (i * (roadWidth / 4));
+                ctx.beginPath();
+                ctx.moveTo(laneX, roadY);
+                ctx.lineTo(laneX, roadY + roadHeight);
+                ctx.stroke();
             }
+
+            // Draw SFO section
+            const startPercent = (staAwal % 1000) / 1000;
+            const endPercent = (staAkhir % 1000) / 1000;
+            const startX = roadStartX + (startPercent * roadWidth);
+            const endX = roadStartX + (endPercent * roadWidth);
+            const sfoWidth = endX - startX;
+
+            ctx.fillStyle = "#007bff";
+            ctx.fillRect(startX, roadY, sfoWidth, roadHeight);
+
+            // Draw SFO border
+            ctx.strokeStyle = "#0056b3";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            ctx.strokeRect(startX, roadY, sfoWidth, roadHeight);
+
+            // Draw SFO label
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 14px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("LOKASI SFO", startX + sfoWidth / 2, roadY + roadHeight / 2 + 5);
+
+            // Draw scale
+            ctx.fillStyle = "#000";
+            ctx.font = "12px Arial";
+            ctx.textAlign = "center";
+
+            // Draw scale markers and labels
+            for (let i = 0; i <= 10; i++) {
+                const x = roadStartX + (i * (roadWidth / 10));
+                const staValue = i * 100;
+
+                // Draw marker
+                ctx.beginPath();
+                ctx.moveTo(x, roadY + roadHeight + 5);
+                ctx.lineTo(x, roadY + roadHeight + 15);
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Draw label
+                ctx.fillText(staValue.toString(), x, roadY + roadHeight + 30);
+            }
+
+            // Draw start and end labels
+            ctx.fillText("0", roadStartX, roadY + roadHeight + 30);
+            ctx.fillText("1000", roadStartX + roadWidth, roadY + roadHeight + 30);
+
+            // Draw scale title
+            ctx.font = "bold 14px Arial";
+            ctx.fillText("STA SCALE (meter)", canvas.width / 2, roadY + roadHeight + 50);
+
+            // Draw legend
+            const legendY = roadY + roadHeight + 80;
+
+            // SFO Legend
+            ctx.fillStyle = "#007bff";
+            ctx.fillRect(roadStartX, legendY, 20, 20);
+            ctx.strokeStyle = "#0056b3";
+            ctx.strokeRect(roadStartX, legendY, 20, 20);
+            ctx.fillStyle = "#000";
+            ctx.font = "12px Arial";
+            ctx.textAlign = "left";
+            ctx.fillText(": Area SFO", roadStartX + 30, legendY + 15);
+
+            // Road Legend
+            ctx.fillStyle = "#6c757d";
+            ctx.fillRect(roadStartX + 150, legendY, 20, 20);
+            ctx.fillStyle = "#000";
+            ctx.fillText(": Jalan", roadStartX + 180, legendY + 15);
+        }
+
+        // Event listener untuk modal show (jika modal ditampilkan ulang)
+        document.getElementById('sfoModal').addEventListener('shown.bs.modal', function() {
+            renderSfoCanvas();
         });
     </script>
     <script>
