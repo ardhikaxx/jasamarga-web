@@ -27,20 +27,16 @@ class HomeController extends Controller
             $kilometer = $request->kilometer;
             $tahun = $request->tahun;
 
-            // Konversi kilometer ke meter (STA) - jika input kilometer
-            // Jika input langsung STA, tidak perlu konversi
             $staValue = $kilometer;
 
-            // Debug log
             Log::info('Pencarian SFO:', [
                 'input' => $kilometer,
                 'tahun' => $tahun,
                 'sta_value' => $staValue
             ]);
 
-            // Query untuk mencari data SFO yang sesuai dengan STA
             $query = SfoActivity::with([
-                'projek' => function($q) use ($tahun) {
+                'projek' => function ($q) use ($tahun) {
                     $q->where('tahun_projek', $tahun);
                 },
                 'lokasi',
@@ -49,27 +45,22 @@ class HomeController extends Controller
                 $q->where('tahun_projek', $tahun);
             });
 
-            // Filter berdasarkan STA - mencari SFO yang:
-            // 1. STA awal sama dengan input
-            // 2. STA akhir sama dengan input  
-            // 3. Input berada dalam range STA awal - STA akhir
             $query->where(function ($q) use ($staValue) {
                 $q->where('sta_awal', '=', $staValue)
-                  ->orWhere('sta_akhir', '=', $staValue)
-                  ->orWhere(function ($q2) use ($staValue) {
-                      $q2->where('sta_awal', '<=', $staValue)
-                         ->where('sta_akhir', '>=', $staValue);
-                  });
+                    ->orWhere('sta_akhir', '=', $staValue)
+                    ->orWhere(function ($q2) use ($staValue) {
+                        $q2->where('sta_awal', '<=', $staValue)
+                            ->where('sta_akhir', '>=', $staValue);
+                    });
             });
 
             $sfoActivities = $query->get();
 
-            // Debug log hasil query
             Log::info('Hasil Pencarian SFO:', [
                 'jumlah_data' => $sfoActivities->count(),
                 'sta_value' => $staValue,
                 'tahun' => $tahun,
-                'data' => $sfoActivities->map(function($item) {
+                'data' => $sfoActivities->map(function ($item) {
                     return [
                         'id' => $item->id,
                         'sta_awal' => $item->sta_awal,
@@ -87,7 +78,6 @@ class HomeController extends Controller
                 ], 404);
             }
 
-            // Jika hanya ditemukan satu data, langsung tampilkan detail
             if ($sfoActivities->count() === 1) {
                 return response()->json([
                     'status' => 'single',
@@ -95,7 +85,6 @@ class HomeController extends Controller
                 ]);
             }
 
-            // Jika ditemukan multiple data, tampilkan pilihan
             return response()->json([
                 'status' => 'multiple',
                 'html' => view('partials.sfo_results_modal', compact('sfoActivities', 'kilometer', 'tahun', 'staValue'))->render(),
@@ -110,7 +99,7 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             Log::error('Error in checkLocation: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
-            
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
