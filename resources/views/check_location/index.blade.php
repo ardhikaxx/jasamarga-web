@@ -33,19 +33,19 @@
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
-                                <label for="sta" class="form-label text-primary h5">STA (meter)</label>
+                                <label for="sta" class="form-label text-primary h5">STA Kilometer (Km)</label>
                             </div>
                             <div class="input-group">
                                 <input type="number" class="form-control @error('sta') is-invalid @enderror" 
                                     id="sta" name="sta" value="{{ old('sta') }}"
                                     placeholder="Masukkan STA dalam meter" required>
-                                <span class="input-group-text">m</span>
+                                <span class="input-group-text">Km</span>
                                 @error('sta')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <small class="form-text text-muted">
-                                Contoh: 756505 untuk STA 756+505
+                                Masukkan STA langsung dalam meter (contoh: 759506)
                             </small>
                         </div>
                     </div>

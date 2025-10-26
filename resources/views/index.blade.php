@@ -618,57 +618,42 @@
                 <h2 class="location-title">CEK LOKASI SFO</h2>
                 <form id="cekLokasiForm" class="location-form row g-3 d-flex justify-content-center">
                     @csrf
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-4">
                         <div class="form-group-header">
                             <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                 class="form-icon">
-                            <label>STA Awal</label>
+                            <label>STA Kilometer (Km)</label>
                         </div>
                         <div class="input-wrapper">
-                            <input type="number" name="sta_awal" placeholder="Mis: 25000" required>
+                            <input type="number" name="kilometer" placeholder="Masukkan STA dalam meter" required
+                                value="{{ old('kilometer') }}" step="1" min="0">
                         </div>
+                        <small class="form-text text-muted" style="font-size: 12px; color: #6c757d;">
+                            Masukkan STA langsung dalam meter (contoh: 759506)
+                        </small>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-4">
                         <div class="form-group-header">
                             <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}"
                                 alt="" class="form-icon">
-                            <label>STA Akhir</label>
-                        </div>
-                        <div class="input-wrapper">
-                            <input type="number" name="sta_akhir" placeholder="Mis: 25800" required>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <div class="form-group-header">
-                            <img src="{{ asset('images/314_740.svg') }}" alt="" class="form-icon">
-                            <label>Jalur</label>
-                        </div>
-                        <div class="input-wrapper select-wrapper">
-                            <select name="jalur" required>
-                                <option value="" disabled selected>Pilih Jalur</option>
-                                @foreach ($jalurOptions as $jalur)
-                                    <option value="{{ $jalur }}">{{ $jalur }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <div class="form-group-header">
-                            <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}"
-                                alt="" class="form-icon">
-                            <label>Tahun</label>
+                            <label>Tahun Projek</label>
                         </div>
                         <div class="input-wrapper select-wrapper">
                             <select name="tahun" required>
                                 <option value="" disabled selected>Pilih Tahun</option>
-                                @foreach ($tahunOptions as $tahun)
-                                    <option value="{{ $tahun }}">{{ $tahun }}</option>
+                                @foreach ($tahunOptions as $tahunOpt)
+                                    <option value="{{ $tahunOpt }}"
+                                        {{ old('tahun') == $tahunOpt ? 'selected' : '' }}>
+                                        {{ $tahunOpt }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-check-location w-100">Cek Lokasi</button>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <button type="submit" class="btn btn-check-location w-100">
+                            <i class="bi bi-search me-1"></i>Cek Lokasi
+                        </button>
                     </div>
                 </form>
             </div>
@@ -684,6 +669,25 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="sfoModalBody">
+                    <!-- Content will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Multiple Results -->
+    <div class="modal fade" id="sfoResultsModal" tabindex="-1" aria-labelledby="sfoResultsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="sfoResultsModalLabel">Hasil Pencarian Lokasi SFO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="sfoResultsModalBody">
                     <!-- Content will be loaded here -->
                 </div>
                 <div class="modal-footer">
@@ -801,36 +805,68 @@
             e.preventDefault();
             const form = e.target;
             const formData = new FormData(form);
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            // Tampilkan loading
+            submitBtn.innerHTML =
+                '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+            submitBtn.disabled = true;
 
             fetch("{{ route('home.cekLokasiSfo') }}", {
                     method: "POST",
                     headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json",
                     },
                     body: formData
                 })
-                .then(res => res.json())
+                .then(async (res) => {
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.message || 'Network response was not ok');
+                    }
+                    return data;
+                })
                 .then(data => {
-                    if (data.status === 'success') {
+                    console.log('Response data:', data);
+
+                    if (data.status === 'single') {
+                        // Tampilkan modal detail untuk single result
                         document.getElementById('sfoModalBody').innerHTML = data.html;
                         const modal = new bootstrap.Modal(document.getElementById('sfoModal'));
                         modal.show();
-
-                        // Render canvas setelah modal ditampilkan
-                        renderSfoCanvas();
+                        setTimeout(renderSfoCanvas, 500);
+                    } else if (data.status === 'multiple') {
+                        // Tampilkan modal results untuk multiple results
+                        document.getElementById('sfoResultsModalBody').innerHTML = data.html;
+                        const modal = new bootstrap.Modal(document.getElementById('sfoResultsModal'));
+                        modal.show();
+                    } else if (data.status === 'not_found') {
+                        alert(data.message || 'Data SFO tidak ditemukan.');
                     } else {
-                        alert('Data SFO tidak ditemukan.');
+                        alert('Status response tidak dikenali: ' + data.status);
                     }
                 })
                 .catch(err => {
-                    alert('Terjadi kesalahan saat memuat data.');
+                    console.error('Error details:', err);
+                    alert(err.message || 'Terjadi kesalahan saat memuat data.');
+                })
+                .finally(() => {
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 });
         });
 
         // Fungsi untuk merender canvas SFO
         function renderSfoCanvas() {
             const canvas = document.getElementById("sfoCanvas");
-            if (!canvas) return;
+            if (!canvas) {
+                console.log('Canvas not found');
+                return;
+            }
 
             const ctx = canvas.getContext("2d");
 
@@ -970,9 +1006,52 @@
             ctx.fillText(": Jalan", roadStartX + 180, legendY + 15);
         }
 
-        // Event listener untuk modal show (jika modal ditampilkan ulang)
+        // Event listener untuk modal show
         document.getElementById('sfoModal').addEventListener('shown.bs.modal', function() {
             renderSfoCanvas();
+        });
+
+        // Fungsi untuk load detail SFO dari modal results
+        function loadSfoDetail(sfoId) {
+            fetch(`/sfo-detail/${sfoId}`)
+                .then(async (response) => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Network response was not ok');
+                    }
+                    return data;
+                })
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Tutup modal hasil dan buka modal detail
+                        const resultsModal = bootstrap.Modal.getInstance(document.getElementById('sfoResultsModal'));
+                        if (resultsModal) {
+                            resultsModal.hide();
+                        }
+
+                        // Tampilkan modal detail
+                        document.getElementById('sfoModalBody').innerHTML = data.html;
+                        const modal = new bootstrap.Modal(document.getElementById('sfoModal'));
+                        modal.show();
+
+                        // Render canvas setelah modal ditampilkan
+                        setTimeout(renderSfoCanvas, 500);
+                    } else {
+                        alert('Gagal memuat detail SFO: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat memuat detail SFO: ' + error.message);
+                });
+        }
+
+        // Event listener global untuk tombol view-detail
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('view-detail-btn')) {
+                const sfoId = e.target.getAttribute('data-sfo-id');
+                loadSfoDetail(sfoId);
+            }
         });
     </script>
     <script>

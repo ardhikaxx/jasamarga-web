@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/cek-lokasi-sfo', [HomeController::class, 'checkLocation'])->name('home.cekLokasiSfo');
+Route::get('/sfo-detail/{id}', [HomeController::class, 'getSfoDetail'])->name('home.sfo-detail');
 
 // Auth Routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
