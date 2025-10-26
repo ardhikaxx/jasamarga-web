@@ -14,10 +14,10 @@ class CheckLocationController extends Controller
     {
         // Ambil data jalur yang tersedia
         $jalurOptions = Location::distinct()->pluck('jalur');
-        
+
         // Ambil tahun projek yang tersedia
         $tahunOptions = Project::distinct()->pluck('tahun_projek');
-        
+
         return view('check_location.index', compact('jalurOptions', 'tahunOptions'));
     }
 
@@ -39,21 +39,21 @@ class CheckLocationController extends Controller
 
         // Query untuk mencari data SFO yang sesuai
         $query = SfoActivity::with(['projek', 'lokasi', 'jenisPekerjaan'])
-            ->whereHas('projek', function($q) use ($tahun) {
+            ->whereHas('projek', function ($q) use ($tahun) {
                 $q->where('tahun_projek', $tahun);
             })
-            ->whereHas('lokasi', function($q) use ($jalur) {
+            ->whereHas('lokasi', function ($q) use ($jalur) {
                 $q->where('jalur', $jalur);
             });
 
         // Filter berdasarkan STA range
-        $query->where(function($q) use ($staAwal, $staAkhir) {
+        $query->where(function ($q) use ($staAwal, $staAkhir) {
             $q->whereBetween('sta_awal', [$staAwal, $staAkhir])
-              ->orWhereBetween('sta_akhir', [$staAwal, $staAkhir])
-              ->orWhere(function($q2) use ($staAwal, $staAkhir) {
-                  $q2->where('sta_awal', '<=', $staAwal)
-                     ->where('sta_akhir', '>=', $staAkhir);
-              });
+                ->orWhereBetween('sta_akhir', [$staAwal, $staAkhir])
+                ->orWhere(function ($q2) use ($staAwal, $staAkhir) {
+                    $q2->where('sta_awal', '<=', $staAwal)
+                        ->where('sta_akhir', '>=', $staAkhir);
+                });
         });
 
         // Filter tambahan berdasarkan tanggal jika diisi
@@ -81,7 +81,7 @@ class CheckLocationController extends Controller
     public function detail($id)
     {
         $sfo = SfoActivity::with(['projek', 'lokasi', 'jenisPekerjaan'])->findOrFail($id);
-        
+
         return view('check_location.detail', compact('sfo'));
     }
 }
