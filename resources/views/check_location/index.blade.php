@@ -28,61 +28,30 @@
                 
                 <form method="POST" action="{{ route('check-location.process') }}">
                     @csrf
-                    <div class="row mb-2">
-                        <div class="col-12 col-md-6 mb-1 mb-md-0">
+                    <div class="row mb-3">
+                        <div class="col-12">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
-                                <label for="sta_awal" class="form-label text-primary h5">STA Awal</label>
+                                <label for="sta" class="form-label text-primary h5">STA (meter)</label>
                             </div>
                             <div class="input-group">
-                                <input type="number" class="form-control @error('sta_awal') is-invalid @enderror" 
-                                    id="sta_awal" name="sta_awal" value="{{ old('sta_awal') }}"
-                                    placeholder="Masukkan STA Awal" required>
-                                @error('sta_awal')
+                                <input type="number" class="form-control @error('sta') is-invalid @enderror" 
+                                    id="sta" name="sta" value="{{ old('sta') }}"
+                                    placeholder="Masukkan STA dalam meter" required>
+                                <span class="input-group-text">m</span>
+                                @error('sta')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="form-group-header mb-2">
-                                <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
-                                    class="form-icon">
-                                <label for="sta_akhir" class="form-label text-primary h5">STA Akhir</label>
-                            </div>
-                            <div class="input-group">
-                                <input type="number" class="form-control @error('sta_akhir') is-invalid @enderror" 
-                                    id="sta_akhir" name="sta_akhir" value="{{ old('sta_akhir') }}"
-                                    placeholder="Masukkan STA Akhir" required>
-                                @error('sta_akhir')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <small class="form-text text-muted">
+                                Contoh: 756505 untuk STA 756+505
+                            </small>
                         </div>
                     </div>
 
-                    <div class="row mb-2">
-                        <div class="col-12 col-md-6 mb-1 mb-md-0">
-                            <div class="form-group-header mb-2">
-                                <img src="{{ asset('images/314_740.svg') }}" alt="" class="form-icon">
-                                <label for="jalur" class="form-label text-primary h5">Lokasi Jalur</label>
-                            </div>
-                            <select class="form-select @error('jalur') is-invalid @enderror" 
-                                id="jalur" name="jalur" aria-label="Pilih Jalur" required>
-                                <option value="" selected disabled>Pilih Lokasi Jalur</option>
-                                @foreach($jalurOptions as $jalur)
-                                    <option value="{{ $jalur }}" {{ old('jalur') == $jalur ? 'selected' : '' }}>
-                                        {{ $jalur }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('jalur')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="col-12 col-md-6 mb-1 mb-md-0">
+                    <div class="row mb-3">
+                        <div class="col-12">
                             <div class="form-group-header mb-2">
                                 <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
                                     class="form-icon">
@@ -103,22 +72,7 @@
                         </div>
                     </div>
 
-                    <div class="row mb-2">
-                        <div class="col-12 col-md-6">
-                            <div class="form-group-header mb-2">
-                                <img src="{{ asset('images/5736e074b2abdecf804d13fb256bcccc06761f0a.png') }}" alt=""
-                                    class="form-icon">
-                                <label for="tanggal_sfo" class="form-label text-primary h5">Pilih Tanggal SFO (Opsional)</label>
-                            </div>
-                            <input type="date" class="form-control @error('tanggal_sfo') is-invalid @enderror" 
-                                id="tanggal_sfo" name="tanggal_sfo" value="{{ old('tanggal_sfo') }}">
-                            @error('tanggal_sfo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end mt-3 mt-md-0">
+                    <div class="d-flex justify-content-end mt-4">
                         <button type="submit" class="btn btn-primary px-4">
                             <i class="bi bi-search me-2"></i>Cek Lokasi
                         </button>
@@ -129,6 +83,7 @@
     </div>
 
     <style>
+        /* CSS tetap sama */
         .form-group-header {
             display: flex;
             align-items: center;
@@ -175,7 +130,7 @@
         .btn-primary {
             background-color: #00a4f4;
             border-color: #00a4f4;
-            padding:- 10px 20px;
+            padding: 10px 20px;
             border-radius: 8px;
             font-weight: 600;
         }
@@ -188,6 +143,11 @@
         .invalid-feedback {
             display: block;
             color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+
+        .form-text {
             font-size: 0.875em;
             margin-top: 0.25rem;
         }
