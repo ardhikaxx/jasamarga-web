@@ -7,27 +7,17 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Menggunakan pagination dengan 10 data per halaman
         $projects = Project::orderBy('created_at', 'desc')->paginate(10);
         return view('projects.index', compact('projects'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('projects.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([

@@ -34,7 +34,7 @@ class CheckLocationController extends Controller
 
         $query->where(function ($q) use ($staValue) {
             $q->where('sta_awal', '<=', $staValue)
-              ->where('sta_akhir', '>=', $staValue);
+                ->where('sta_akhir', '>=', $staValue);
         });
 
         $sfoActivities = $query->get();

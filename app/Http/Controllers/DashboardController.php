@@ -12,21 +12,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Data untuk statistik jalan sudah dan belum di-SFO
-        // Hitung total panjang jalan dari data SFO yang ada (dalam meter)
         $totalSfoPanjang = SfoActivity::sum('panjang');
-        
-        // Asumsi total panjang jalan adalah maksimum dari total SFO atau 10 KM (10000 meter)
         $totalPanjangJalan = max($totalSfoPanjang, 10000);
-        
-        // Hitung persentase progress
         $progressPercentage = $totalPanjangJalan > 0 ? ($totalSfoPanjang / $totalPanjangJalan) * 100 : 0;
-        
-        // Konversi ke KM dan format dengan 1 desimal
         $jalanSudahSfo = number_format($totalSfoPanjang / 1000, 1, '.', '');
         $jalanBelumSfo = number_format(max(0, $totalPanjangJalan - $totalSfoPanjang) / 1000, 1, '.', '');
-        
-        // Data untuk grafik SFO per tahun
         $tahun = request('tahun', date('Y'));
         $grafikData = $this->getSfoChartData($tahun);
         

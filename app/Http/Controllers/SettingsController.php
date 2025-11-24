@@ -36,7 +36,6 @@ class SettingsController extends Controller
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'password' => 'nullable|string|min:8|confirmed',
             ], [
-                // Pesan error custom dalam bahasa Indonesia
                 'fullname.required' => 'Nama lengkap wajib diisi.',
                 'username.required' => 'Username wajib diisi.',
                 'username.unique'   => 'Username sudah digunakan.',
@@ -50,7 +49,6 @@ class SettingsController extends Controller
                 'password.confirmed'=> 'Konfirmasi password tidak sesuai.',
             ]);
 
-            // Update foto jika ada
             if ($request->hasFile('photo')) {
                 if ($admin->photo && Storage::exists('public/photos/' . $admin->photo)) {
                     Storage::delete('public/photos/' . $admin->photo);
@@ -61,7 +59,6 @@ class SettingsController extends Controller
                 $validated['photo'] = $photoName;
             }
 
-            // Update password jika ada
             if (!empty($validated['password'])) {
                 $validated['password'] = Hash::make($validated['password']);
             } else {

@@ -7,26 +7,17 @@ use Illuminate\Http\Request;
 
 class WorkController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $workTypes = WorkType::orderBy('nama_pekerjaan')->get();
         return view('work.index', compact('workTypes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('work.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -40,9 +31,6 @@ class WorkController extends Controller
             ->with('success', 'Jenis pekerjaan berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(WorkType $work)
     {
         return view('work.show', compact('work'));

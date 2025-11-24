@@ -16,15 +16,10 @@ use Illuminate\Support\Facades\Validator;
 
 class SFOController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = SfoActivity::with(['projek', 'lokasi', 'jenisPekerjaan'])
             ->orderBy('tanggal_sfo', 'desc');
-
-        // Filter by date range
         if ($request->has('filter_type')) {
             switch ($request->filter_type) {
                 case 'pertanggal':
@@ -50,7 +45,6 @@ class SFOController extends Controller
             }
         }
 
-        // Search functionality
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -70,14 +64,12 @@ class SFOController extends Controller
             });
         }
 
-        // Menggunakan pagination dengan 10 data per halaman
         $sfoActivities = $query->paginate(10);
 
         $projects = Project::all();
         $locations = Location::all();
         $workTypes = WorkType::all();
 
-        // Ambil data projek untuk modal
         $modalProjects = Project::select('id', 'nama_projek', 'tahun_projek', 'lokasi')
             ->orderBy('nama_projek')
             ->paginate(5)
